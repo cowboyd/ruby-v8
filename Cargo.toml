@@ -1,0 +1,13 @@
+[package]
+name = "v8"
+version = "0.1.0"
+authors = ["Charles Lowell <cowboyd@frontside.io>"]
+edition = "2018"
+
+[dependencies]
+rutie = {version="0.8.1"}
+rusty_v8 = {version="0.16.0"}
+
+[lib]
+name = "rubyracer"
+crate-type = ["cdylib"]
