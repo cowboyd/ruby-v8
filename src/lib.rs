@@ -1,7 +1,7 @@
 #[macro_use]
 extern crate rutie;
 
-use rutie::{Module, Object, AnyObject, RString, VM, NilClass, Boolean};
+use rutie::{Module, Object, AnyObject, RString, VM, NilClass, Boolean, Integer, Float};
 use rusty_v8 as v8;
 
 module!(V8);
@@ -30,6 +30,15 @@ methods!(
         } else if result.is_boolean() {
             let state = result.to_boolean(scope).boolean_value(scope);
             Boolean::new(state).into()
+        } else if result.is_int32() {
+            let num = result.to_int32(scope).unwrap().int32_value(scope).unwrap();
+            Integer::from(num).into()
+        } else if result.is_uint32() {
+            let uint = result.to_uint32(scope).unwrap().uint32_value(scope).unwrap();
+            Integer::from(uint).into()
+        } else if result.is_number() {
+            let num = result.to_number(scope).unwrap().number_value(scope).unwrap();
+            Float::new(num).into()
         } else {
             let result = result.to_string(scope).unwrap();
             let result_string = result.to_rust_string_lossy(scope);

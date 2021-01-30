@@ -14,4 +14,16 @@ RSpec.describe V8 do
     expect(V8.eval('true')).to eq(true)
     expect(V8.eval('false')).to eq(false)
   end
+
+  it "evaluates int32 values to integers" do
+    expect(V8.eval('-5')).to eq(-5)
+  end
+
+  it "evaluates uint32 values to integers" do
+    expect(V8.eval('2147483648')).to eq(2147483648)
+  end
+
+  it "evaluates int64 values to integers" do
+    expect(V8.eval('-2147483650')).to eq(-2147483650)
+  end
 end
