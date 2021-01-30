@@ -1,7 +1,7 @@
 #[macro_use]
 extern crate rutie;
 
-use rutie::{Module, Object, RString, VM};
+use rutie::{Module, Object, AnyObject, RString, VM, NilClass, Boolean};
 use rusty_v8 as v8;
 
 module!(V8);
@@ -10,7 +10,7 @@ methods!(
     V8,
     _rtself,
 
-    fn pub_eval(input: RString) -> RString {
+    fn pub_eval(input: RString) -> AnyObject {
         let input = input.map_err(|e| VM::raise_ex(e)).unwrap();
         let source = input.to_str();
 
@@ -24,10 +24,18 @@ methods!(
 
         let script = v8::Script::compile(scope, code, None).unwrap();
         let result = script.run(scope).unwrap();
-        let result = result.to_string(scope).unwrap();
-        let result_string = result.to_rust_string_lossy(scope);
 
-        RString::new_utf8(&result_string)
+        if result.is_null_or_undefined() {
+            NilClass::new().into()
+        } else if result.is_boolean() {
+            let state = result.to_boolean(scope).boolean_value(scope);
+            Boolean::new(state).into()
+        } else {
+            let result = result.to_string(scope).unwrap();
+            let result_string = result.to_rust_string_lossy(scope);
+
+            RString::new_utf8(&result_string).into()
+        }
     }
 );
 
